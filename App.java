@@ -2,11 +2,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import java.io.*;
-import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class App implements ActionListener, ListSelectionListener {
     private JFrame window;
@@ -17,6 +26,8 @@ public class App implements ActionListener, ListSelectionListener {
     private JList<String> list;
     private Desktop desk = Desktop.getDesktop();
     private JTextField linkField;
+    private Map<String, String> itemLinkMap = new HashMap<>();
+    private String selectedValue;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new App().createAndShowGUI());
@@ -53,7 +64,8 @@ public class App implements ActionListener, ListSelectionListener {
         listPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.lightGray), "Names", 0, 0, null, Color.lightGray));
         
         listModel = new DefaultListModel<>();
-        JList<String> list = new JList<>(listModel);
+        list = new JList<>(listModel);
+        loadDataFromFile("memory.txt");
         list.addListSelectionListener(this);
         JScrollPane listScrollPane = new JScrollPane(list);
         listScrollPane.setPreferredSize(new Dimension(300, 300));
@@ -75,9 +87,124 @@ public class App implements ActionListener, ListSelectionListener {
         window.setVisible(true);
     }
     
+    private void loadDataFromFile(String fileName) {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(fileName));
+            boolean isListModel = false;
+            boolean isLink = false;
+            List<String> items = new ArrayList<>();
+            List<String> links = new ArrayList<>();
+
+            for (String line : lines) {
+                line = line.trim();
+                if (line.startsWith("listModel:")) {
+                    isListModel = true;
+                    isLink = false;
+                    continue;
+                } else if (line.startsWith("link:")) {
+                    isListModel = false;
+                    isLink = true;
+                    continue;
+                }
+                // ---
+                if (isListModel) {
+                    String[] listItems = line.split(",");
+                    for (String item : listItems) {
+                        item = item.trim();
+                        listModel.addElement(item);
+                        items.add(item);
+                    }
+                } else if (isLink) {
+                    String[] linkItems = line.split(",");
+                    for (String link : linkItems) {
+                        link = link.trim();
+                        links.add(link);
+                    }
+                }
+            }
+
+            // Populate the itemLinkMap with items and their corresponding links
+            for (int i = 0; i < items.size() && i < links.size(); i++) {
+                itemLinkMap.put(items.get(i), links.get(i));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDataToFile(String fileName, String key, String newValue) {
+        List<String> lines = new ArrayList<>();
+        boolean isListModel = false;
+        boolean isLink = false;
+        boolean updated = false;
+        
+        // Read existing file content
+        try {
+            lines = Files.readAllLines(Paths.get(fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Update the content
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i).trim();
+            if (line.startsWith("listModel:")) {
+                isListModel = true;
+                isLink = false;
+                continue;
+            } else if (line.startsWith("link:")) {
+                isListModel = false;
+                isLink = true;
+                continue;
+            }
+
+            if (isListModel && key.equals("listModel")) {
+                lines.set(i, newValue);
+                updated = true;
+                break;
+            } else if (isLink && key.equals("link")) {
+                lines.set(i, newValue);
+                updated = true;
+                break;
+            }
+        }
+
+        // If the key was not found, add new key-value pair
+        if (!updated) {
+            lines.add(key + ": " + newValue);
+        }
+
+        // Write updated content back to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getListModelContent() {
+        StringBuilder content = new StringBuilder();
+        for (int i = 0; i < listModel.size(); i++) {
+            content.append(listModel.get(i));
+            if (i < listModel.size() - 1) {
+                content.append(", ");
+            }
+        }   
+        return content.toString();
+    }
+
+    private String getItemLink(String item) {
+        // System.out.println(itemLinkMap);
+        return itemLinkMap.getOrDefault(item.toLowerCase(), "Link not found");
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         listModel.addElement(names.getText());
+        updateDataToFile("memory.txt", "listModel", getListModelContent());
         names.setText("");
     }
 
@@ -106,6 +233,7 @@ public class App implements ActionListener, ListSelectionListener {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         listModel.removeElement(selectedValue);
+                        updateDataToFile("memory.txt", "listModel", getListModelContent());
                         optionsPanel.removeAll();
                         optionsPanel.revalidate();
                         optionsPanel.repaint();
@@ -133,9 +261,31 @@ public class App implements ActionListener, ListSelectionListener {
                 JLabel linkLabel = new JLabel("Link:");
                 linkLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 optionsPanel.add(linkLabel, BorderLayout.EAST);
-                JTextField linkField = new JTextField();
+                linkField = new JTextField();
                 linkField.setMaximumSize(new Dimension(Integer.MAX_VALUE, linkField.getPreferredSize().height));
                 linkField.setAlignmentX(Component.CENTER_ALIGNMENT);
+                linkField.setText(getItemLink(selectedValue));
+                linkField.getDocument().addDocumentListener(new DocumentListener() {
+                    @Override
+                    public void insertUpdate(DocumentEvent e) {
+                        updateLink();
+                    }
+
+                    @Override
+                    public void removeUpdate(DocumentEvent e) {
+                        updateLink();
+                    }
+
+                    @Override
+                    public void changedUpdate(DocumentEvent e) {
+                        updateLink();
+                    }
+
+                    private void updateLink() {
+                        itemLinkMap.put(selectedValue, linkField.getText());
+                        updateDataToFile("memory.txt", "link", getLinkContent());
+                    }
+                });
                 optionsPanel.add(linkField);
                 // Add some spacing
                 optionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
