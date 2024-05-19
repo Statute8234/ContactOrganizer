@@ -1,4 +1,4 @@
-# Boggle
+# App
 
 [![Static Badge](https://img.shields.io/badge/uri-pink)](https://docs.oracle.com/javase/8/docs/api/java/net/URI.html)
 [![Static Badge](https://img.shields.io/badge/filewriter-beige)](https://docs.oracle.com/javase/8/docs/api/java/io/FileWriter.html)
