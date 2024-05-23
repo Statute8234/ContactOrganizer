@@ -31,10 +31,10 @@ The Java Swing application offers a GUI for managing a list of names with linked
 ## Installation
 
 - Clone the Repository: Clone this repository to your local machine.
-git clone <repository_url>
+git clone [<repository_url>](https://github.com/Statute8234/App.git)
 
 - Navigate to the Project Directory:
-cd <project_directory>
+cd App
 
 - Compile the Application:
 javac App.java
