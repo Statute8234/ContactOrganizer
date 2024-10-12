@@ -1,10 +1,23 @@
 # App
 
-[![Static Badge](https://img.shields.io/badge/uri-pink)](https://docs.oracle.com/javase/8/docs/api/java/net/URI.html)
-[![Static Badge](https://img.shields.io/badge/filewriter-beige)](https://docs.oracle.com/javase/8/docs/api/java/io/FileWriter.html)
-[![Static Badge](https://img.shields.io/badge/bufferedwriter-wheat)](https://docs.oracle.com/javase/8/docs/api/java/io/BufferedWriter.html)
-[![Static Badge](https://img.shields.io/badge/ioexception-sienna)](https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true)
-[![Static Badge](https://img.shields.io/badge/documentlistener-chocolate)](https://docs.oracle.com/javase/8/docs/api/javax/swing/event/DocumentListener.html)
+[![Static Badge](https://img.shields.io/badge/javax.swing.*-blue)](https://mvnrepository.com/artifact/javax.swing.*)
+[![Static Badge](https://img.shields.io/badge/java.awt.*-gray)](https://mvnrepository.com/artifact/java.awt.*)
+[![Static Badge](https://img.shields.io/badge/java.awt.event.ActionEvent-blue)](https://mvnrepository.com/artifact/java.awt.event.ActionEvent)
+[![Static Badge](https://img.shields.io/badge/java.awt.event.ActionListener-purple)](https://mvnrepository.com/artifact/java.awt.event.ActionListener)
+[![Static Badge](https://img.shields.io/badge/java.io.BufferedWriter-pink)](https://mvnrepository.com/artifact/java.io.BufferedWriter)
+[![Static Badge](https://img.shields.io/badge/java.io.FileWriter-orange)](https://mvnrepository.com/artifact/java.io.FileWriter)
+[![Static Badge](https://img.shields.io/badge/java.io.IOException-yellow)](https://mvnrepository.com/artifact/java.io.IOException)
+[![Static Badge](https://img.shields.io/badge/java.net.URI-pink)](https://mvnrepository.com/artifact/java.net.URI)
+[![Static Badge](https://img.shields.io/badge/javax.swing.event.DocumentListener-black)](https://mvnrepository.com/artifact/javax.swing.event.DocumentListener)
+[![Static Badge](https://img.shields.io/badge/javax.swing.event.ListSelectionEvent-gray)](https://mvnrepository.com/artifact/javax.swing.event.ListSelectionEvent)
+[![Static Badge](https://img.shields.io/badge/javax.swing.event.ListSelectionListener-black)](https://mvnrepository.com/artifact/javax.swing.event.ListSelectionListener)
+[![Static Badge](https://img.shields.io/badge/java.nio.file.Files-black)](https://mvnrepository.com/artifact/java.nio.file.Files)
+[![Static Badge](https://img.shields.io/badge/java.nio.file.Paths-brown)](https://mvnrepository.com/artifact/java.nio.file.Paths)
+[![Static Badge](https://img.shields.io/badge/java.util.ArrayList-green)](https://mvnrepository.com/artifact/java.util.ArrayList)
+[![Static Badge](https://img.shields.io/badge/java.util.HashMap-purple)](https://mvnrepository.com/artifact/java.util.HashMap)
+[![Static Badge](https://img.shields.io/badge/java.util.List-pink)](https://mvnrepository.com/artifact/java.util.List)
+[![Static Badge](https://img.shields.io/badge/java.util.Map-red)](https://mvnrepository.com/artifact/java.util.Map)
+
 
 The Java Swing application offers a GUI for managing a list of names, allowing users to add, view, search, open, remove, and save data from a file.
 
